@@ -9,8 +9,8 @@
 // =============================================================================
 
 #include "tasksThread.h"
-#define HAVE_STRUCT_TIMESPEC
-#include <pthread.h>
+// #define HAVE_STRUCT_TIMESPEC
+// #include <pthread.h>
 #include <iostream>
 // #include "utils.h"
 #include <windows.h>
@@ -29,7 +29,7 @@ long ScheduleTask::now_ms() {
     return timestamp;
 }
 
-void ScheduleTask::thread_entry()
+ void ScheduleTask::thread_work_cicle()
 {
     while (true)
     {

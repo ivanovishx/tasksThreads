@@ -1,9 +1,9 @@
 // =============================================================================
 //
 //  taskThread.h
-//  
+//
 //  Run in Windows VC++
-//  Created by Ivan Lozano 
+//  Created by Ivan Lozano
 //  Research purposes
 //
 // =============================================================================
@@ -12,21 +12,20 @@
 #ifndef __SHEDULETASK_HPP__
 #define __SHEDULETASK_HPP__
 
-
-#include "thread.h"
+#define HAVE_STRUCT_TIMESPEC
+#include <pthread.h>
+// #include "thread.h"
 #include <stdio.h>
 #include <sys\timeb.h>
 
 using namespace std;
-// using namespace DJI;
-// using namespace DJI::onboardSDK;
 
-class ScheduleTask: public thread_c
+class ScheduleTask
 {
 
 private:
 
-    
+
     long timerHz;
     long timer100Hz;
     long timer50Hz;
@@ -47,14 +46,31 @@ private:
     bool run5SegTasks();
 
     struct timeb start;
-    // static struct timeb start, end;
+
+
+// Threat:
+    pthread_t _thread;
+    static void * thread_call(void * t) {
+
+        ((ScheduleTask *)t)->thread_work_cicle();
+        return NULL;
+    }
+
+    bool create()
+    {
+        bool a = 0;
+        return (pthread_create(&_thread, NULL, thread_call, this) == 0);
+           }
+
+    void wait_second_join()
+    {
+        (void) pthread_join(_thread, NULL);
+    }
+
 
 protected:
-
-    
-
-    // virtual bool process_input( char *buff, size_t cb );
-    // virtual bool process_output();
+    // virtual bool server_input_process( char *buff, size_t cb );
+    // virtual bool server_output_process();
 
 public:
 
@@ -64,7 +80,7 @@ public:
     ScheduleTask()
     {
 
-     
+
         timer100Hz = now_ms();
         timer50Hz = timer100Hz;
         timer20Hz = timer100Hz;
@@ -73,12 +89,12 @@ public:
         timer2Hz = timer100Hz;
         timer1Hz = timer100Hz;
         timer5Seg = timer100Hz;
-        create(); // Create Thread -> calling thread_entry()
+        create(); // Create Thread -> calling thread_work_cicle()
 
     }
 
-    void thread_entry();
-   
+    void thread_work_cicle();
+
 };
 
 
